@@ -1,0 +1,16 @@
+{
+  "name": "trah-tjosemito",
+  "main": "worker.js",
+  "compatibility_date": "2024-11-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "trah-tjosemito-db",
+      "database_id": "45ebaa01-d701-46b1-b418-0fcb7c25801b"
+    }
+  ]
+}
