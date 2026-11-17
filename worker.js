@@ -113,6 +113,11 @@ export default {
       if (request.method === 'POST') return handleLogin({ request, env });
       return json({ error: 'Metode tidak didukung' }, 405);
     }
+    if (url.pathname === '/api/status') {
+      let dbOk = false;
+      try { await env.DB.prepare('SELECT 1').first(); dbOk = true; } catch (e) {}
+      return json({ passwordConfigured: Boolean(env.ADMIN_PASSWORD), database: dbOk });
+    }
     return env.ASSETS.fetch(request);
   },
 };
