@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#38251f">
+<title>Pohon Silsilah Interaktif | Trah Tjosemito</title>
+<style>
+:root{--brown:#432d25;--brown2:#684b3b;--gold:#b9955d;--cream:#f5efe5;--paper:#fffdf9;--ink:#30241f;--muted:#85776d;--line:#e5d9c9;--green:#586b51}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Georgia,serif}
+header{background:var(--brown);color:#fff;padding:22px 24px;border-bottom:3px solid var(--gold)}
+.head{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand small{font:10px Arial;letter-spacing:.22em;color:#d8bd91}.brand h1{font-weight:400;font-size:25px;margin:5px 0 0}.head p{font:12px Arial;color:#e4d9cc;margin:0}
+main{max-width:1200px;margin:auto;padding:28px 22px 60px}
+.intro{text-align:center;margin:15px auto 28px;max-width:760px}.eyebrow{font:10px Arial;letter-spacing:.24em;color:var(--gold);text-transform:uppercase}.intro h2{font-size:34px;font-weight:400;color:var(--brown);margin:10px 0}.intro p{font:13px/1.8 Arial;color:var(--muted)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:22px 0}.btn{border:1px solid var(--gold);padding:11px 16px;background:var(--brown);color:#fff;border-radius:3px;cursor:pointer;font:12px Arial}.btn.secondary{background:transparent;color:var(--brown)}.btn:hover{filter:brightness(1.1)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:5px;box-shadow:0 8px 25px #38251f0a}
+.tree-panel{padding:18px;min-height:420px;overflow:auto}.panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 16px}.panel-title h3{font-size:18px;font-weight:400;color:var(--brown);margin:0}.hint{font:10px Arial;color:var(--muted)}
+.tree{min-width:620px;padding:18px 8px 30px;text-align:center}
+.rootnode{display:inline-flex;flex-direction:column;align-items:center;gap:5px;padding:15px 24px;background:var(--brown);border:1px solid var(--gold);outline:4px solid #f1e8da;color:white;min-width:210px;cursor:pointer;border-radius:3px}
+.rootnode small{font:9px Arial;letter-spacing:.18em;color:#ddc18f}.rootnode strong{font-size:19px;font-weight:400}
+.connector{height:27px;width:1px;background:var(--gold);margin:auto}
+.generations{display:flex;gap:12px;justify-content:center;align-items:flex-start;position:relative;flex-wrap:nowrap}
+.gen-col{min-width:145px;max-width:180px;flex:1;position:relative;padding-top:15px}
+.gen-col:before{content:"";position:absolute;top:0;left:50%;height:15px;width:1px;background:var(--gold)}
+.gen-label{font:9px Arial;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;margin-bottom:9px}
+.person{display:block;width:100%;padding:10px 8px;margin:7px 0;background:#fff;border:1px solid var(--line);border-radius:3px;text-align:center;cursor:pointer;color:var(--ink);transition:.15s}
+.person:hover,.person.active{border-color:var(--gold);background:#f7f0e5;box-shadow:0 3px 12px #432d2514}
+.person b{display:block;font-size:13px;font-weight:400}.person small{display:block;font:9px Arial;color:var(--muted);margin-top:5px}
+.empty-col{font:10px/1.5 Arial;color:#aaa;padding:13px 5px;border:1px dashed var(--line)}
+.side{padding:20px;position:sticky;top:16px}.side h3{font-size:20px;font-weight:400;color:var(--brown);margin:0 0 5px}.side .sub{font:10px Arial;color:var(--gold);letter-spacing:.12em;text-transform:uppercase}
+.side p{font:12px/1.7 Arial;color:var(--muted)}.relations{border-top:1px solid var(--line);margin-top:16px;padding-top:13px}.relations h4{font:10px Arial;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin:0 0 8px}.rel-item{font:12px Arial;padding:7px 0;border-bottom:1px solid #f0e9df;display:flex;justify-content:space-between;gap:8px}.rel-item button{border:0;background:none;color:var(--brown2);text-decoration:underline;cursor:pointer;font:12px Arial;text-align:right}
+.families{margin-top:20px}.families h3{font-size:18px;font-weight:400;color:var(--brown);margin:0 0 12px}.family-grid{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:10px}.family-card{background:var(--paper);border:1px solid var(--line);padding:14px 12px;border-radius:4px}.family-card b{display:block;font-size:13px;font-weight:400;color:var(--brown);line-height:1.45}.family-card small{display:block;font:10px Arial;color:var(--muted);margin-top:7px}.notice{background:#f1e9dc;border-left:3px solid var(--gold);padding:12px 14px;font:11px/1.7 Arial;color:var(--muted);margin-top:17px}
+.modalbg{display:none;position:fixed;inset:0;background:#1e1512c9;z-index:5;align-items:center;justify-content:center;padding:15px}.modalbg.show{display:flex}.modal{width:min(510px,100%);max-height:92vh;overflow:auto;background:var(--paper);padding:24px;border:1px solid var(--gold);border-radius:4px}.modal h3{font-size:22px;font-weight:400;color:var(--brown);margin:0 0 15px}.field{margin:12px 0}.field label{display:block;font:11px Arial;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;padding:10px;border:1px solid var(--line);background:white;font:13px Arial;border-radius:2px}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+footer{text-align:center;padding:25px;color:var(--muted);font:10px Arial}
+@media(max-width:850px){.family-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:1fr}.side{position:static}.head p{display:none}.tree-panel{overflow-x:auto}}
+.admin-only{display:none}body.is-admin .admin-only{display:inline-block}
+</style></head>
+<body>
+<header><div class="head"><div class="brand"><small>ARSIP KELUARGA & SILSILAH</small><h1>Trah Tjosemito</h1></div><p>Merawat jejak • Menyambung generasi</p></div></header>
+<main>
+<div class="intro"><div class="eyebrow">Pohon Keluarga Interaktif</div><h2>Mengenal Hubungan Keluarga</h2><p>Pilih nama anggota untuk melihat orang tua, pasangan, dan anak. Lima cabang keluarga sudah disiapkan; silsilah anggota dapat dilengkapi bertahap melalui formulir.</p></div>
+<div class="toolbar"><button class="btn admin-only" onclick="openAdd()">＋ Tambah Anggota</button><button class="btn secondary" onclick="exportData()">Ekspor Data JSON</button><button class="btn secondary admin-only" onclick="document.getElementById('importFile').click()">Impor Data JSON</button><input type="file" id="importFile" accept=".json,application/json" hidden onchange="importData(event)"><button class="btn secondary" id="btnLogin" onclick="toggleLogin()">Masuk Pengurus</button></div>
+<div class="layout">
+<section class="panel tree-panel"><div class="panel-title"><h3>Bagan Silsilah</h3><span class="hint">Klik kartu nama untuk detail</span></div><div class="tree" id="tree"></div></section>
+<aside class="panel side" id="detail"><div class="sub">Profil Anggota</div><h3>Mbah Tjosemito</h3><p>Leluhur utama Trah Tjosemito.</p><div class="relations"><h4>Hubungan keluarga</h4><div class="rel-item"><span>Orang tua</span><span>—</span></div><div class="rel-item"><span>Pasangan</span><span>Belum diisi</span></div><div class="rel-item"><span>Anak</span><span>Belum diisi</span></div></div></aside>
+</div>
+<section class="families"><h3>Lima Keluarga / Cabang Trah</h3><div class="family-grid" id="familyGrid"></div></section>
+<div class="notice">Silsilah ini tersimpan di database online sehingga semua anggota keluarga melihat data yang sama. Penambahan dan perubahan data hanya dapat dilakukan oleh pengurus trah melalui tombol “Masuk Pengurus”. Gunakan “Ekspor Data JSON” untuk menyimpan salinan cadangan.</div>
+</main>
+<footer>TRAH TJOSEMITO · Satu leluhur, banyak cerita, satu ikatan keluarga</footer>
+<div class="modalbg" id="modalbg"><div class="modal"><h3 id="modalTitle">Tambah Anggota Keluarga</h3>
+<div class="field"><label>Nama lengkap *</label><input id="fName" placeholder="Nama lengkap anggota"></div>
+<div class="field"><label>Generasi *</label><select id="fGen"><option>Anak</option><option>Putu / Wayah</option><option>Buyut</option><option>Canggah</option><option>Wareng</option><option>Udheg-udheg</option><option>Gantung Siwur</option></select></div>
+<div class="field"><label>Cabang keluarga</label><select id="fFamily"></select></div>
+<div class="field"><label>Orang tua (pilih salah satu)</label><select id="fParent"><option value="">— Belum ditentukan —</option></select></div>
+<div class="field"><label>Pasangan</label><select id="fSpouse"><option value="">— Belum ditentukan —</option></select></div>
+<div class="field"><label>Keterangan (opsional)</label><input id="fNote" placeholder="Misalnya: cabang keluarga / catatan"></div>
+<div class="actions"><button class="btn secondary" onclick="closeAdd()">Batal</button><button class="btn" onclick="savePerson()">Simpan</button></div></div></div>
+<div class="modalbg" id="loginbg"><div class="modal"><h3>Masuk Pengurus</h3><div class="field"><label>Kata sandi pengurus</label><input id="fPass" type="password" autocomplete="current-password"></div><div class="actions"><button class="btn secondary" onclick="closeLogin()">Batal</button><button class="btn" onclick="doLogin()">Masuk</button></div></div></div>
+<script>
+const gens=['Anak','Putu / Wayah','Buyut','Canggah','Wareng','Udheg-udheg','Gantung Siwur'];
+const families=[{id:'A',name:'Kel. Mbah Sa Semito'},{id:'B',name:'Kel. Mbah Karto Pawiro'},{id:'C',name:'Kel. Mbah Harjo Sudarmo'},{id:'D',name:'Kel. Mbah Cokro Darminto'},{id:'E',name:'Kel. Mbah Marto Jiono'}];
+const ROOT='mbah-tjosemito',SKEY='trah_admin_pw';
+let people=[],selected=null,adminPw='',isAdmin=false,busy=false,editing=null;
+try{adminPw=sessionStorage.getItem(SKEY)||''}catch(e){}
+const $=id=>document.getElementById(id);
+function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function person(id){return people.find(p=>p.id===id)}
+function childrenOf(id){return people.filter(p=>p.parentId===id)}
+
+/* ---------- API ---------- */
+async function loadPeople(){
+ const r=await fetch('/api/people',{cache:'no-store'});
+ if(!r.ok)throw new Error('Gagal memuat data ('+r.status+')');
+ people=(await r.json()).people||[];
+ if(!person(selected))selected=(people.find(p=>p.gen==='Leluhur utama')||people[0])?.id||null;
+}
+async function save(payload){
+ const r=await fetch('/api/people',{method:'PUT',headers:{'content-type':'application/json','x-admin-password':adminPw},body:JSON.stringify(payload)});
+ if(r.status===401){setAdmin(false);throw new Error('Sesi pengurus tidak valid. Silakan masuk lagi.')}
+ if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.error||'Gagal menyimpan ('+r.status+')')}
+ await loadPeople();
+}
+
+/* ---------- Login pengurus ---------- */
+function setAdmin(v){
+ isAdmin=v;document.body.classList.toggle('is-admin',v);
+ $('btnLogin').textContent=v?'Keluar (Pengurus)':'Masuk Pengurus';
+ if(!v){adminPw='';try{sessionStorage.removeItem(SKEY)}catch(e){}}
+ render();
+}
+function toggleLogin(){if(isAdmin){setAdmin(false)}else{$('fPass').value='';$('loginbg').classList.add('show');setTimeout(()=>$('fPass').focus(),50)}}
+function closeLogin(){$('loginbg').classList.remove('show')}
+async function doLogin(){
+ const pw=$('fPass').value;if(!pw)return;
+ try{
+  const r=await fetch('/api/login',{method:'POST',headers:{'x-admin-password':pw}});
+  if(!r.ok){alert('Kata sandi salah.');return}
+  adminPw=pw;try{sessionStorage.setItem(SKEY,pw)}catch(e){}
+  closeLogin();setAdmin(true);
+ }catch(e){alert('Tidak dapat terhubung ke server.')}
+}
+
+/* ---------- Tampilan ---------- */
+function render(){
+ renderFamilies();
+ const root=people.find(p=>p.gen==='Leluhur utama')||people[0];
+ let html='';
+ if(root){html+=`<button class="rootnode ${selected===root.id?'active':''}" onclick="selectPerson('${root.id}')"><small>LELUHUR UTAMA</small><strong>${safe(root.name)}</strong></button>`}
+ html+='<div class="connector"></div><div class="generations">';
+ gens.forEach(g=>{
+  const list=people.filter(p=>p.gen===g);
+  html+=`<div class="gen-col"><div class="gen-label">${safe(g)}</div>`;
+  if(list.length){list.forEach(p=>{html+=`<button class="person ${selected===p.id?'active':''}" onclick="selectPerson('${p.id}')"><b>${safe(p.name)}</b><small>${childrenOf(p.id).length} anak</small></button>`})}
+  else html+='<div class="empty-col">Belum ada data anggota</div>';
+  html+='</div>';
+ });
+ html+='</div>';$('tree').innerHTML=html;
+ renderDetail();
+}
+function renderFamilies(){
+ $('familyGrid').innerHTML=families.map(f=>{const n=people.filter(p=>p.familyId===f.id).length;return `<div class="family-card"><b>${safe(f.name)}</b><small>${n} anggota terdaftar</small></div>`}).join('');
+}
+function relationLine(label,id,empty){
+ const p=id?person(id):null;
+ return `<div class="rel-item"><span>${label}</span>${p?`<button onclick="selectPerson('${p.id}')">${safe(p.name)}</button>`:`<span>${empty||'Belum diisi'}</span>`}</div>`;
+}
+function renderDetail(){
+ const p=person(selected);if(!p){$('detail').innerHTML='<p>Pilih anggota keluarga.</p>';return}
+ const kids=childrenOf(p.id);
+ const familyName=families.find(f=>f.id===p.familyId)?.name||'';
+ let html=`<div class="sub">Profil Anggota</div><h3>${safe(p.name)}</h3><p>${safe(p.gen)}${familyName?' · '+safe(familyName):''}${p.note?' · '+safe(p.note):''}</p><div class="relations"><h4>Hubungan keluarga</h4>`;
+ html+=relationLine('Orang tua',p.parentId,'Belum ditentukan');
+ html+=relationLine('Pasangan',p.spouseId,'Belum ditentukan');
+ html+=`<div class="rel-item"><span>Anak (${kids.length})</span><span>${kids.length?kids.map(k=>`<button onclick="selectPerson('${k.id}')">${safe(k.name)}</button>`).join(', '):'Belum diisi'}</span></div></div>`;
+ if(isAdmin){
+  html+=`<div class="actions" style="justify-content:flex-start"><button class="btn secondary" onclick="openAdd('${p.id}')">Tambah anak</button><button class="btn secondary" onclick="editPerson('${p.id}')">Ubah data</button></div>`;
+  if(p.id!==ROOT)html+=`<button class="btn secondary" style="margin-top:8px;color:#8b3c30;border-color:#c99" onclick="deletePerson('${p.id}')">Hapus anggota</button>`;
+ }
+ $('detail').innerHTML=html;
+}
+function selectPerson(id){selected=id;render()}
+
+/* ---------- Form (pengurus) ---------- */
+function fillSelects(){
+ $('fFamily').innerHTML='<option value="">— Belum ditentukan —</option>'+families.map(f=>`<option value="${f.id}">${safe(f.name)}</option>`).join('');
+ const opts=people.map(p=>`<option value="${p.id}">${safe(p.name)} (${safe(p.gen)})</option>`).join('');
+ $('fParent').innerHTML='<option value="">— Belum ditentukan —</option>'+opts;
+ $('fSpouse').innerHTML='<option value="">— Belum ditentukan —</option>'+opts;
+}
+function openAdd(parentId=''){
+ editing=null;$('modalTitle').textContent='Tambah Anggota Keluarga';fillSelects();
+ $('fName').value='';$('fNote').value='';$('fParent').value=parentId||'';$('fSpouse').value='';$('fFamily').value='';
+ $('modalbg').classList.add('show');
+}
+function closeAdd(){$('modalbg').classList.remove('show')}
+function editPerson(id){
+ const p=person(id);if(!p)return;editing=id;fillSelects();$('modalTitle').textContent='Ubah Data Anggota';
+ $('fName').value=p.name;$('fGen').value=gens.includes(p.gen)?p.gen:'Anak';$('fParent').value=p.parentId||'';$('fSpouse').value=p.spouseId||'';$('fNote').value=p.note||'';$('fFamily').value=p.familyId||'';
+ $('modalbg').classList.add('show');
+}
+async function savePerson(){
+ if(busy)return;
+ const name=$('fName').value.trim(),gen=$('fGen').value,parentId=$('fParent').value,spouseId=$('fSpouse').value,note=$('fNote').value.trim(),familyId=$('fFamily').value;
+ if(!name){alert('Nama lengkap perlu diisi.');return}
+ if(parentId===editing||spouseId===editing){alert('Anggota tidak dapat menjadi orang tua atau pasangan bagi dirinya sendiri.');return}
+ if(parentId&&person(parentId)?.gen==='Gantung Siwur'){alert('Generasi orang tua sudah berada di tingkat terakhir. Periksa kembali generasinya.');return}
+ const id=editing||('p-'+Date.now()+'-'+Math.random().toString(36).slice(2,7));
+ const old=person(id);
+ const obj={id,name,gen:old&&old.gen==='Leluhur utama'?'Leluhur utama':gen,parentId,spouseId,note,familyId};
+ const upsert=[obj];
+ if(spouseId){const s=person(spouseId);if(s)upsert.push({...s,spouseId:id})}
+ if(old?.spouseId&&old.spouseId!==spouseId){const prior=person(old.spouseId);if(prior&&prior.spouseId===id)upsert.push({...prior,spouseId:''})}
+ busy=true;
+ try{await save({upsert});selected=id;closeAdd();render()}catch(e){alert(e.message)}finally{busy=false}
+}
+async function deletePerson(id){
+ const p=person(id);if(!p||busy)return;
+ if(!confirm('Hapus '+p.name+'? Hubungan anak dan pasangan yang terkait juga akan dilepas.'))return;
+ busy=true;
+ try{await save({remove:[id]});selected=(people.find(x=>x.gen==='Leluhur utama')||people[0])?.id||null;render()}catch(e){alert(e.message)}finally{busy=false}
+}
+
+/* ---------- Ekspor / Impor ---------- */
+function exportData(){
+ const blob=new Blob([JSON.stringify({app:'Trah Tjosemito',version:2,people},null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='data-silsilah-trah-tjosemito.json';a.click();URL.revokeObjectURL(a.href);
+}
+function importData(e){
+ const file=e.target.files[0];if(!file)return;const reader=new FileReader();
+ reader.onload=async()=>{
+  try{
+   const data=JSON.parse(reader.result);const arr=Array.isArray(data)?data:data.people;
+   if(!Array.isArray(arr)||!arr.every(p=>p&&p.id&&p.name&&p.gen))throw Error('format');
+   if(!confirm('Impor akan MENGGANTI seluruh data silsilah di database online (leluhur utama tetap). Lanjutkan?'))return;
+   await save({replace:true,upsert:arr});selected=null;await loadPeople();render();alert('Data berhasil diimpor.');
+  }catch(err){alert(err.message==='format'?'File tidak sesuai format data silsilah Trah Tjosemito.':err.message)}
+ };
+ reader.readAsText(file);e.target.value='';
+}
+
+/* ---------- Mulai ---------- */
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('loginbg').classList.contains('show'))doLogin();if(e.key==='Escape'){closeLogin();closeAdd()}});
+(async()=>{
+ $('tree').innerHTML='<p style="font:12px Arial;color:#85776d">Memuat data silsilah…</p>';
+ try{await loadPeople()}catch(e){$('tree').innerHTML='<p style="font:12px Arial;color:#8b3c30">'+safe(e.message)+'. Muat ulang halaman.</p>';return}
+ if(adminPw){try{const r=await fetch('/api/login',{method:'POST',headers:{'x-admin-password':adminPw}});if(r.ok){setAdmin(true);return}else{adminPw='';try{sessionStorage.removeItem(SKEY)}catch(e){}}}catch(e){}}
+ render();
+})();
+</script></body></html>
