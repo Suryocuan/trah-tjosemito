@@ -16,11 +16,20 @@ const json = (d, s = 200) =>
 async function sha256(s) {
   return new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
 }
+async function getAdminPassword(env) {
+  if (env.ADMIN_PASSWORD) return { pw: env.ADMIN_PASSWORD, source: 'secret' };
+  try {
+    const r = await env.DB.prepare("SELECT value FROM settings WHERE key = 'admin_password'").first();
+    if (r && r.value) return { pw: String(r.value), source: 'database' };
+  } catch (e) {}
+  return { pw: '', source: 'none' };
+}
 async function isAdmin(request, env) {
-  if (!env.ADMIN_PASSWORD) return false;
+  const { pw } = await getAdminPassword(env);
+  if (!pw) return false;
   const [a, b] = await Promise.all([
     sha256(request.headers.get('x-admin-password') || ''),
-    sha256(env.ADMIN_PASSWORD),
+    sha256(pw),
   ]);
   return crypto.subtle.timingSafeEqual(a, b);
 }
@@ -116,7 +125,8 @@ export default {
     if (url.pathname === '/api/status') {
       let dbOk = false;
       try { await env.DB.prepare('SELECT 1').first(); dbOk = true; } catch (e) {}
-      return json({ passwordConfigured: Boolean(env.ADMIN_PASSWORD), database: dbOk });
+      const { source } = await getAdminPassword(env);
+      return json({ passwordConfigured: source !== 'none', passwordSource: source, database: dbOk });
     }
     return env.ASSETS.fetch(request);
   },
